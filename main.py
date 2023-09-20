@@ -11,7 +11,7 @@ import pytz
 BOT_TOKEN = settings.BOT_TOKEN
 YA_TOKEN = settings.YA_TOKEN
 YA_PATH_FILES = 'From_TG'
-MESSAGES_PATH = 'home_pc/Obsidian_Vault/Notes'
+NOTE_PATH = 'home_pc/Obsidian_Vault/Notes/mob_garbage.md'
 
 
 bot = Bot(BOT_TOKEN)
@@ -37,24 +37,27 @@ async def process_save_files(message: Message, bot: Bot):
         await message.answer(text=f"Фото сохранено")
     else:
         doc_id = message.document.file_id
+        doc_name = message.document.file_name
         await bot.download(message.document, destination=f"tmp/{doc_id}")
-        await y.upload(f"tmp/{doc_id}", f"{YA_PATH_FILES}/docs/{doc_id}")
+        await y.upload(f"tmp/{doc_id}", f"{YA_PATH_FILES}/docs/{doc_name}")
         await message.answer("Документ сохранен")
     await y.close()
     for f in os.listdir('tmp'):
-        os.remove(os.path.join('tmp', f))  
+        os.remove(os.path.join('tmp', f))
 
 @dp.message()
 async def process_save_text(message: Message):
     if message.text.lower() in ["да", "давай"]:
         await message.answer("Присылай сообщение, фото или видео")
     else:
-        with open("tmp.txt", "w+") as file:
-            file.write(message.text)
-        file_name = message.date.astimezone(moscow_timezone).ctime()
-        await y.upload("tmp.txt", f"home_pc/Obsidian_Vault/Notes/{file_name}.md")
+        await y.download(f"{NOTE_PATH}", "tmp.txt")
+        with open("tmp.txt", "a+") as file:
+            file.write(f"\n- [ ] {message.text}")
+        # file_name = message.date.astimezone(moscow_timezone).ctime()
+        await y.remove(f"{NOTE_PATH}", permanently=True)
+        await y.upload("tmp.txt", f"{NOTE_PATH}")
         os.remove('tmp.txt')
-        await message.answer(f"Сохранил в файл {file_name}")
+        await message.answer("Добавил")
         await y.close()
     
 if __name__ == '__main__':
