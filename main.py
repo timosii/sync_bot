@@ -3,7 +3,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 from aiogram import F
 from config import settings
-from background import keep_alive
+
 import yadisk_async
 import os
 import pytz
@@ -60,6 +60,6 @@ async def process_save_text(message: Message):
         await message.answer("Добавил")
         await y.close()
 
-keep_alive()
+
 if __name__ == '__main__':
     dp.run_polling(bot)
