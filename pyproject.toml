@@ -9,10 +9,11 @@ packages = [{include = "sync_bot"}]
 [tool.poetry.dependencies]
 python = "^3.10"
 aiogram = "^3.0.0"
-dotenv = "^0.0.5"
 python-dotenv = "^1.0.0"
 pytz = "^2023.3.post1"
 yadisk-async = "^1.4.3"
+requests = "^2.31.0"
+flask = "^3.0.0"
 
 
 [build-system]

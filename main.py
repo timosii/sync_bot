@@ -3,6 +3,7 @@ from aiogram.filters import Command, CommandStart
 from aiogram.types import Message
 from aiogram import F
 from config import settings
+from background import keep_alive
 import yadisk_async
 import os
 import pytz
@@ -34,7 +35,7 @@ async def process_save_files(message: Message, bot: Bot):
         photo_id = message.photo[-1].file_id
         await bot.download(message.photo[-1], destination=f"tmp/{photo_id}.jpg")
         await y.upload(f"tmp/{photo_id}.jpg", f"{YA_PATH_FILES}/photos/{photo_id}.jpg")
-        await message.answer(text=f"Фото сохранено")
+        await message.answer(text="Фото сохранено")
     else:
         doc_id = message.document.file_id
         doc_name = message.document.file_name
@@ -53,12 +54,12 @@ async def process_save_text(message: Message):
         await y.download(f"{NOTE_PATH}", "tmp.txt")
         with open("tmp.txt", "a+") as file:
             file.write(f"\n- [ ] {message.text}")
-        # file_name = message.date.astimezone(moscow_timezone).ctime()
         await y.remove(f"{NOTE_PATH}", permanently=True)
         await y.upload("tmp.txt", f"{NOTE_PATH}")
         os.remove('tmp.txt')
         await message.answer("Добавил")
         await y.close()
-    
+
+keep_alive()
 if __name__ == '__main__':
     dp.run_polling(bot)
